@@ -4,11 +4,6 @@ enable-magisk-update = true   # set this to false if you do not want to receive 
 # see https://github.com/j-hc/revanced-magisk-module/blob/main/CONFIG.md for more detailed explanations
 
 # you can use rvmm-config-gen to generate a config
-
-[TikTok-Ex]
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.zhiliaoapp.musically"
-included-patches = "'SIM spoof'"
-
 [X-piko]
 apkmirror-dlurl = "https://apkmirror.com/apk/twitter-inc/twitter/"
 archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.twitter.android"
