@@ -134,7 +134,7 @@ for table_name in $(toml_get_table_names); do
 	table_name_f=${table_name,,}
 	table_name_f=${table_name_f// /-}
 	app_args[module_prop_name]=$(toml_get "$t" module-prop-name) || {
-		app_args[module_prop_name]="${table_name_f}-jhc"
+		app_args[module_prop_name]="${table_name_f}-thunderkex"
 		if [ "${app_args[arch]}" = "arm64-v8a" ]; then
 			app_args[module_prop_name]="${app_args[module_prop_name]}-arm64"
 		elif [ "${app_args[arch]}" = "arm-v7a" ]; then
