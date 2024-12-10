@@ -10,6 +10,6 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach root ReVanc
 
 [revanced-extended](https://github.com/thunderkex/revanced-extended)
   
-CLI: inotia00/revanced-cli-5.0.1-all.jar  
+CLI: j-hc/revanced-cli-5.0.0-all.jar  
 Patches: inotia00/patches-5.0.3.rvp  
 Patches: inotia00/patches-5.1.1-dev.1.rvp    
