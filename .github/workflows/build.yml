@@ -54,6 +54,7 @@ jobs:
       - name: Get output
         id: get_output
         run: |
+          echo "DATE=$(date +%y.%m.%d)" >> "$GITHUB_OUTPUT"
           DELIM="$(openssl rand -hex 8)"
           echo "BUILD_LOG<<${DELIM}" >> "$GITHUB_OUTPUT"
           cat build.md >> "$GITHUB_OUTPUT"
@@ -71,7 +72,7 @@ jobs:
           body: ${{ steps.get_output.outputs.BUILD_LOG }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./build/*
-          release_name: ReVanced eXtended v${{ steps.date.outputs.DATE }}
+          release_name: ReVanced eXtended v${{ steps.get_output.outputs.DATE }}
           tag: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
           file_glob: true
           overwrite: true

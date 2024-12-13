@@ -7,7 +7,7 @@ BIN_DIR="bin"
 BUILD_DIR="build"
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
-NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
+NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y.%m.%d')}
 OS=$(uname -o)
 
 toml_prep() {
@@ -54,8 +54,10 @@ get_rv_prebuilts() {
 		local ext
 		if [ "$tag" = "CLI" ]; then
 			ext="jar"
+			local grab_cl=false
 		elif [ "$tag" = "Patches" ]; then
 			ext="rvp"
+			local grab_cl=true
 		else abort unreachable; fi
 		local dir=${src%/*}
 		dir=${TEMP_DIR}/${dir,,}-rv
@@ -84,8 +86,9 @@ get_rv_prebuilts() {
 			name=$(jq -r .name <<<"$asset")
 			file="${dir}/${name}"
 			gh_dl "$file" "$url" >&2 || return 1
-			echo "$tag: $(cut -d/ -f1 <<<"$src")/${name}  " >>"${cl_dir}/changelog.md"
+			echo "> 🚀 - $tag: \`$(cut -d/ -f1 <<<"$src")/${name}\`  " >>"${cl_dir}/changelog.md"
 		else
+			grab_cl=false
 			local for_err=$file
 			if [ "$ver" = "latest" ]; then
 				file=$(grep -v '/[^/]*dev[^/]*$' <<<"$file" | head -1)
@@ -96,7 +99,7 @@ get_rv_prebuilts() {
 			tag_name=v${tag_name%.*}
 		fi
 		if [ "$tag" = "Patches" ]; then
-			if [ ! -f "$file" ]; then echo -e "[Changelog](https://github.com/${src}/releases/tag/${tag_name})\n" >>"${cl_dir}/changelog.md"; fi
+			if [ $grab_cl = true ]; then echo -e "[🖇 - Changelog](https://github.com/${src}/releases/tag/${tag_name})\n" >>"${cl_dir}/changelog.md"; fi
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = true ]; then
 				if ! (
 					mkdir -p "${file}-zip" || return 1
@@ -197,7 +200,7 @@ _req() {
 		mv -f "$dlp" "$op"
 	fi
 }
-req() { _req "$1" "$2" --header="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"; }
+req() { _req "$1" "$2" --header="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"; }
 gh_req() { _req "$1" "$2" --header="$GH_HEADER"; }
 gh_dl() {
 	if [ ! -f "$1" ]; then
@@ -258,7 +261,7 @@ isoneof() {
 merge_splits() {
 	local bundle=$1 output=$2
 	pr "Merging splits"
-	gh_dl "$TEMP_DIR/apkeditor.jar" "https://github.com/REAndroid/APKEditor/releases/download/V1.3.9/APKEditor-1.3.9.jar" >/dev/null || return 1
+	gh_dl "$TEMP_DIR/apkeditor.jar" "https://github.com/REAndroid/APKEditor/releases/download/V1.4.1/APKEditor-1.4.1.jar" >/dev/null || return 1
 	if ! OP=$(java -jar "$TEMP_DIR/apkeditor.jar" merge -i "${bundle}" -o "${bundle}.mzip" -clean-meta -f 2>&1); then
 		epr "$OP"
 		return 1
@@ -433,7 +436,7 @@ check_sig() {
 
 build_rv() {
 	eval "declare -A args=${1#*=}"
-	local version pkg_name
+	local version="" pkg_name=""
 	local mode_arg=${args[build_mode]} version_mode=${args[version]}
 	local app_name=${args[app_name]}
 	local app_name_l=${app_name,,}
@@ -515,7 +518,7 @@ build_rv() {
 	if ! check_sig "$stock_apk" "$pkg_name"; then
 		abort "apk signature mismatch '$stock_apk'"
 	fi
-	log "${table}: ${version}"
+	log "✔️ - ${table}: \`${version}\`"
 
 	local microg_patch
 	microg_patch=$(java -jar "$rv_cli_jar" list-patches "$rv_patches_jar" -f "$pkg_name" -v -p 2>&1 |

@@ -1,4 +1,6 @@
-enable-magisk-update = true   # set this to false if you do not want to receive updates for the module in magisk app
+enable-magisk-update = true
+parallel-jobs = 1
+compression-level = 9
 
 # add 'enabled = false' for not patching a specific app or remove it from the config
 # see https://github.com/j-hc/revanced-magisk-module/blob/main/CONFIG.md for more detailed explanations
@@ -21,47 +23,58 @@ integrations-source = "crimera/revanced-integrations"
 patches-version = "dev"
 enabled = false
 
+[TikTok]
+uptodown-dlurl = "https://tiktok.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/tiktok-pte-ltd/tik-tok-including-musical-ly"
+included-patches = "'SIM spoof'"
+
 [Reddit-Ex]
-apkmirror-dlurl = "https://www.apkmirror.com/apk/redditinc/reddit/"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.reddit.frontpage"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://reddit-official-app.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/redditinc/reddit"
 patches-source = "inotia00/revanced-patches"
+cli-source = "inotia00/revanced-cli"
 excluded-patches = "'Custom branding name for Reddit'"
 
 [Reddit-Ex-dev]
-apkmirror-dlurl = "https://www.apkmirror.com/apk/redditinc/reddit/"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.reddit.frontpage"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://reddit-official-app.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/redditinc/reddit"
 patches-source = "inotia00/revanced-patches"
+cli-source = "inotia00/revanced-cli"
 excluded-patches = "'Custom branding name for Reddit'"
 patches-version = "dev"
 
 [YouTube-Ex]
-build-mode = "both"
-apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube/"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube"
 patches-source = "inotia00/revanced-patches"
-excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube'"
+cli-source = "inotia00/revanced-cli"
+included-patches = "'MaterialYou' 'Return YouTube Username'"
+excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Theme'"
+build-mode = "both"
 
 [YouTube-Ex-Dev]
-build-mode = "both"
-apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube/"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube"
 patches-source = "inotia00/revanced-patches"
-excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube'"
+cli-source = "inotia00/revanced-cli"
+included-patches = "'MaterialYou' 'Return YouTube Username'"
+excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Theme'"
+build-mode = "both"
 patches-version = "dev"
 
 [Music-Ex]
-build-mode = "both"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.youtube.music"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube-music"
 patches-source = "inotia00/revanced-patches"
-excluded-patches = "'Custom branding icon for YouTube Music' 'Custom branding name for YouTube Music'"
+cli-source = "inotia00/revanced-cli"
+excluded-patches = "'Custom branding icon for YouTube Music' 'Custom branding name for YouTube Music' 'Return YouTube Username'"
+build-mode = "both"
 
 [Music-Ex-dev]
-build-mode = "both"
-archive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.youtube.music"
-cli-source = "inotia00/revanced-cli"
+uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
+apkmirror-dlurl = "https://apkmirror.com/apk/google-inc/youtube-music"
 patches-source = "inotia00/revanced-patches"
-excluded-patches = "'Custom branding icon for YouTube Music' 'Custom branding name for YouTube Music'"
+cli-source = "inotia00/revanced-cli"
+excluded-patches = "'Custom branding icon for YouTube Music' 'Custom branding name for YouTube Music' 'Return YouTube Username'"
+build-mode = "both"
 patches-version = "dev"
