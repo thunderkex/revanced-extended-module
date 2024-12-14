@@ -26,24 +26,17 @@ until
 do sleep 1; done
 if [ ! -f ~/.rvmm_"$(date '+%Y%m')" ]; then
 	pr "Setting up environment..."
-	yes "" | pkg update -y && pkg install -y openssl git wget jq openjdk-17 zip
+	yes "" | pkg update -y && pkg install -y openssl git curl jq openjdk-17 zip
 	: >~/.rvmm_"$(date '+%Y%m')"
 fi
 mkdir -p /sdcard/Download/revanced-extended/
 
-if [ ! -d revanced-extended ]; then
-	pr "Cloning revanced-extended."
-	git clone https://github.com/thunderkex/revanced-extended --depth 1
-	cd revanced-extended
-	sed -i '/^enabled.*/d; /^\[.*\]/a enabled = false' config.toml
-	grep -q 'revanced-extended' ~/.gitconfig 2>/dev/null \
-		|| git config --global --add safe.directory ~/revanced-extended
-else
-	cd revanced-extended
+if [ -d revanced-extended ] || [ -f config.toml ]; then
+	if [ -d revanced-extended ]; then cd revanced-extended; fi
 	pr "Checking for revanced-extended updates"
 	git fetch
 	if git status | grep -q 'is behind\|fatal'; then
-		pr "revanced-extended already is not synced with upstream."
+		pr "revanced-extended is not synced with upstream."
 		pr "Cloning revanced-extended. config.toml will be preserved."
 		cd ..
 		cp -f revanced-extended/config.toml .
@@ -52,6 +45,13 @@ else
 		mv -f config.toml revanced-extended/config.toml
 		cd revanced-extended
 	fi
+else
+	pr "Cloning revanced-extended."
+	git clone https://github.com/thunderkex/revanced-extended --depth 1
+	cd revanced-extended
+	sed -i '/^enabled.*/d; /^\[.*\]/a enabled = false' config.toml
+	grep -q 'revanced-extended' ~/.gitconfig 2>/dev/null ||
+		git config --global --add safe.directory ~/revanced-extended
 fi
 
 [ -f ~/storage/downloads/revanced-extended/config.toml ] \
