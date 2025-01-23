@@ -7,7 +7,7 @@ BIN_DIR="bin"
 BUILD_DIR="build"
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
-NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y.%m.%d')}
+NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
 OS=$(uname -o)
 
 toml_prep() {
@@ -86,7 +86,7 @@ get_rv_prebuilts() {
 			name=$(jq -r .name <<<"$asset")
 			file="${dir}/${name}"
 			gh_dl "$file" "$url" >&2 || return 1
-			echo "> 🚀 - $tag: \`$(cut -d/ -f1 <<<"$src")/${name}\`  " >>"${cl_dir}/changelog.md"
+			echo "$tag: $(cut -d/ -f1 <<<"$src")/${name}  " >>"${cl_dir}/changelog.md"
 		else
 			grab_cl=false
 			local for_err=$file
@@ -200,7 +200,7 @@ _req() {
 		mv -f "$dlp" "$op"
 	fi
 }
-req() { _req "$1" "$2" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"; }
+req() { _req "$1" "$2" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"; }
 gh_req() { _req "$1" "$2" -H "$GH_HEADER"; }
 gh_dl() {
 	if [ ! -f "$1" ]; then
@@ -261,7 +261,7 @@ isoneof() {
 merge_splits() {
 	local bundle=$1 output=$2
 	pr "Merging splits"
-	gh_dl "$TEMP_DIR/apkeditor.jar" "https://github.com/REAndroid/APKEditor/releases/download/V1.4.1/APKEditor-1.4.1.jar" >/dev/null || return 1
+	gh_dl "$TEMP_DIR/apkeditor.jar" "https://github.com/REAndroid/APKEditor/releases/download/V1.3.9/APKEditor-1.3.9.jar" >/dev/null || return 1
 	if ! OP=$(java -jar "$TEMP_DIR/apkeditor.jar" merge -i "${bundle}" -o "${bundle}.mzip" -clean-meta -f 2>&1); then
 		epr "$OP"
 		return 1
@@ -521,21 +521,13 @@ build_rv() {
 	if ! check_sig "$stock_apk" "$pkg_name"; then
 		abort "apk signature mismatch '$stock_apk'"
 	fi
-	log "✔️ - ${table}: ${version}"
-	local list_patches
-	list_patches=$(java -jar "$rv_cli_jar" list-patches "$rv_patches_jar" -f "$pkg_name" -v -p 2>&1)
+	log "${table}: ${version}"
 
 	local microg_patch
 	microg_patch=$(grep "^Name: " <<<"$list_patches" | grep -i "gmscore\|microg" || :) microg_patch=${microg_patch#*: }
 	if [ -n "$microg_patch" ] && [[ ${p_patcher_args[*]} =~ $microg_patch ]]; then
 		epr "You cant include/exclude microg patch as that's done by rvmm builder automatically."
 		p_patcher_args=("${p_patcher_args[@]//-[ei] ${microg_patch}/}")
-	fi
-	local spoof_streams_patch
-	spoof_streams_patch=$(grep "^Name: " <<<"$list_patches" | grep -i "spoof" | grep -i "streams" || :) spoof_streams_patch=${spoof_streams_patch#*: }
-	if [ -n "$spoof_streams_patch" ] && [[ ${p_patcher_args[*]} =~ $spoof_streams_patch ]]; then
-		epr "You cant include/exclude spoof stream patch as that's done by rvmm builder automatically."
-		p_patcher_args=("${p_patcher_args[@]//-[ei] ${spoof_streams_patch}/}")
 	fi
 
 	local patcher_args patched_apk build_mode
@@ -545,7 +537,7 @@ build_rv() {
 	for build_mode in "${build_mode_arr[@]}"; do
 		patcher_args=("${p_patcher_args[@]}")
 		pr "Building '${table}' in '$build_mode' mode"
-		if [ -n "$microg_patch" ] || [ -n "$spoof_streams_patch" ]; then
+		if [ -n "$microg_patch" ]; then
 			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}-${build_mode}.apk"
 		else
 			patched_apk="${TEMP_DIR}/${app_name_l}-${rv_brand_f}-${version_f}-${arch_f}.apk"
@@ -555,13 +547,6 @@ build_rv() {
 				patcher_args+=("-e \"${microg_patch}\"")
 			elif [ "$build_mode" = module ]; then
 				patcher_args+=("-d \"${microg_patch}\"")
-			fi
-		fi
-		if [ -n "$spoof_streams_patch" ]; then
-			if [ "$build_mode" = apk ]; then
-				patcher_args+=("-e \"${spoof_streams_patch}\"")
-			elif [ "$build_mode" = module ]; then
-				patcher_args+=("-d \"${spoof_streams_patch}\"")
 			fi
 		fi
 		if [ "${args[riplib]}" = true ]; then
@@ -594,10 +579,12 @@ build_rv() {
 		local upj="${table,,}-update.json"
 
 		module_config "$base_template" "$pkg_name" "$version" "$arch"
+
+		local rv_patches_ver="${rv_patches_jar##*-}"
 		module_prop \
 			"${args[module_prop_name]}" \
 			"${app_name} ${args[rv_brand]}" \
-			"$version" \
+			"${version} (patches: ${rv_patches_ver%%.rvp})" \
 			"${app_name} ${args[rv_brand]} Magisk module" \
 			"https://raw.githubusercontent.com/${GITHUB_REPOSITORY-}/update/${upj}" \
 			"$base_template"
