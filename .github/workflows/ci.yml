@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "0 16 * * *"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     permissions: write-all
@@ -37,7 +41,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh run list -L400 --json databaseId -q '.[].databaseId' | tail -n+10 | xargs -IID gh api "repos/$GITHUB_REPOSITORY/actions/runs/ID" -X DELETE || :
+          gh run list --workflow "${{ github.workflow }}" -L400 --json databaseId -q '.[].databaseId' | 
+          tail -n+10 | 
+          xargs -I{} gh api "repos/${{ github.repository }}/actions/runs/{}" -X DELETE || true
 
     outputs:
       SHOULD_BUILD: ${{ steps.should_build.outputs.SHOULD_BUILD }}
@@ -45,6 +51,6 @@ jobs:
   build:
     permissions: write-all
     needs: check
+    if: needs.check.outputs.SHOULD_BUILD == '1'
     uses: ./.github/workflows/build.yml
-    if: ${{ needs.check.outputs.SHOULD_BUILD == 1 }}
     secrets: inherit
