@@ -1,6 +1,6 @@
 {
-  "version": "v7.16.53 (patches: 5.3.1) (60)",
-  "versionCode": 60,
-  "zipUrl": "https://github.com/thunderkex/revanced-extended/releases/download/60/music-ex-dev-revanced-magisk-v7.16.53-all.zip",
+  "version": "v7.16.53 (patches: dev.3) (62)",
+  "versionCode": 62,
+  "zipUrl": "https://github.com/thunderkex/revanced-extended/releases/download/62/music-ex-dev-revanced-magisk-v7.16.53-all.zip",
   "changelog": "https://raw.githubusercontent.com/thunderkex/revanced-extended/update/build.md"
 }
